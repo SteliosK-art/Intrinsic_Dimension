@@ -1,0 +1,300 @@
+# generates a (slightly distorted) sinusoid over the circle in R^3
+case0 <- function(n) {
+  radii <- rep(1, n)
+  phi <- runif(n) * 2 * pi
+
+  x1 <- radii * cos(phi)
+  x2 <- radii * sin(phi)
+  x3 <- 0.1 * sin(150 * phi)
+  data <- cbind(x1, x2, x3)
+  data
+}
+
+
+# generates a k-sphere
+case1 <- function(dim) {
+  x <- replicate(dim + 1, rnorm(1))
+  u <- x / sqrt(sum(x^2))
+  u
+}
+
+
+# Generates a 3d affine space in 5 dimensions
+case2 <- function(n) {
+  para1 <- 4 * runif(n)
+  para2 <- 4 * runif(n)
+  para3 <- 4 * runif(n)
+
+  x1 <- 1.2 * para1 - 0.5 * para2 + 3
+  x2 <- 0.5 * para1 + 0.9 * para3 - 1
+  x3 <- -0.5 * para1 - 0.2 * para2 + para3
+  x4 <- 0.4 * para1 - 0.9 * para2 - 0.1 * para3
+  x5 <- 1.1 * para1 - 0.3 * para3 + 8
+  return(matrix(cbind(x1, x2, x3, x4, x5), ncol = 5))
+}
+
+
+
+# generates a strange 4-dim figure in 6 dimensions
+case3 <- function(n, dim = 6) {
+  para <- replicate(dim, runif(n))
+  x1 <- para[, 2] * para[, 2] * cos(2 * pi * para[, 1])
+
+  x2 <- para[, 3] * para[, 3] * sin(2 * pi * para[, 1])
+
+  x3 <- para[, 2] + para[, 3] + (para[, 2] - para[, 4])^2
+
+  x4 <- para[, 2] - 2 * para[, 3] + (para[, 1] - para[, 4])^2
+
+  x5 <- -para[, 2] - 2 * para[, 3] + (para[, 3] - para[, 4])^2
+
+  x6 <- para[, 1] * para[, 1] - para[, 2] * para[, 2]
+  +para[, 3] * para[, 3] - para[, 4] * para[, 4]
+
+  return(matrix(cbind(x1, x2, x3, x4, x5, x6), ncol = 6))
+}
+
+
+## Generates a 4-dim manifold in 8 dimensions
+case4 <- function(n, dim = 4) {
+  para <- replicate(dim, runif(n))
+  data1 <- para[, 2] * cos(2 * pi * para[, 1])
+  data2 <- para[, 2] * sin(2 * pi * para[, 1])
+  data3 <- para[, 3] * cos(2 * pi * para[, 2])
+  data4 <- para[, 3] * sin(2 * pi * para[, 2])
+  data5 <- para[, 4] * cos(2 * pi * para[, 3])
+  data6 <- para[, 4] * sin(2 * pi * para[, 3])
+  data7 <- para[, 1] * cos(2 * pi * para[, 4])
+  data8 <- para[, 1] * sin(2 * pi * para[, 4])
+  return(matrix(cbind(data1, data2, data3, data4, data5, data6, data7, data8), ncol = 8))
+}
+
+
+
+
+## A 2d helix in 3D
+case5 <- function(n) {
+  radii <- 2 * pi * runif(n) - pi
+  phi <- runif(n) * 2 * pi
+
+  x1 <- radii * sin(phi)
+  x2 <- radii * cos(phi)
+  x3 <- phi
+  return(matrix(cbind(x1, x2, x3), ncol = 3))
+}
+
+
+# Generates a 6-dim manifold in 36 dimensions
+case6 <- function(n, dim = 6) {
+  para <- replicate(dim, runif(n))
+  data <- list()
+
+  for (j in seq(1, 5, 1))
+  {
+    data[[2 * j - 1]] <- para[, j + 1] * cos(2 * pi * para[, j])
+    data[[2 * j]] <- para[, j + 1] * sin(2 * pi * para[, j])
+  }
+  data[[11]] <- para[, 1] * cos(2 * pi * para[, 6])
+  data[[12]] <- para[, 1] * sin(2 * pi * para[, 6])
+
+
+  for (j in seq(1:12))
+  {
+    data[[j + 12]] <- data[[j]]
+    data[[j + 24]] <- data[[j]]
+  }
+
+  return(matrix(unlist(data), ncol = 36))
+}
+
+
+
+## Swiss roll
+case7 <- function(n) {
+  radii <- 2 * pi * runif(n) - pi
+  phi <- runif(n) * 2 * pi
+
+  x1 <- phi * sin(2.5 * phi)
+  x2 <- radii
+  x3 <- phi * cos(2.5 * phi)
+  return(matrix(cbind(x1, x2, x3), ncol = 3))
+}
+
+
+
+## Generates a 12dim in 72 dimensions
+case8 <- function(n, dim = 12) {
+  a <- MultiRNG::draw.d.variate.uniform(no.row = n, d = dim, cov.mat = diag(1, dim))
+  data <- list()
+
+  for (i in 1:n)
+  {
+    for (j in 1:11)
+    {
+      data[[2 * j - 1]] <- a[, j + 1] * cos(2 * pi * a[, j])
+      data[[2 * j]] <- a[, j + 1] * sin(2 * pi * a[, j])
+    }
+    data[[23]] <- a[, 1] * cos(2 * pi * a[, 12])
+    data[[24]] <- a[, 1] * sin(2 * pi * a[, 12])
+  }
+  {
+    for (j in 1:24)
+    {
+      data[[j + 24]] <- data[[j]]
+      data[[j + 48]] <- data[[j]]
+    }
+  }
+  return(matrix(unlist(data), ncol = 72))
+}
+
+
+
+## Generates a 20 dim affine space in 20 dimensions
+case9 <- function(dim = 20, n = 2500) {
+  vectors <- matrix(ncol = 20, nrow = 20)
+  data <- list()
+  para <- replicate(20, runif(n, -2.5, 2.5))
+  vectors <- replicate(20, 10 * (runif(n) - 0.5))
+  for (k in 1:20) {
+    vectors[k, k] <- 1
+  }
+  for (j in 1:20) {
+    data[[j]] <- 0
+    for (i in 1:20) {
+      data[[j]] <- data[[j]] + para[, i] * vectors[, j]
+    }
+  }
+  return(matrix(unlist(data), nrow = n))
+}
+
+
+
+
+
+case10 <- function(n, dim) {
+  para <- replicate(dim, runif(n))
+  data <- list()
+  for (j in 1:dim) {
+    data[[j]] <- para[, j]
+  }
+  data[[dim]] <- replicate(n, 0)
+  return(matrix(unlist(data), ncol = dim))
+}
+
+
+
+
+## Moebius Band in 3d
+case11 <- function(n) {
+  para <- matrix(ncol = 2, nrow = n)
+  para[, 1] <- runif(n, 0, 2 * pi)
+  para[, 2] <- 2 * runif(n) - 1
+
+  x1 <- (1 + 0.5 * para[, 2] * cos(0.5 * 10.0 * para[, 1])) * cos(para[, 1])
+  x2 <- (1 + 0.5 * para[, 2] * cos(0.5 * 10.0 * para[, 1])) * sin(para[, 1])
+  x3 <- 0.5 * para[, 2] * sin(0.5 * 10.0 * para[, 1])
+  return(matrix(cbind(x1, x2, x3), nrow = n))
+}
+
+
+## Multivariate Gaussian
+case12 <- function(n, dim) {
+  x <- replicate(dim, rnorm(n))
+  x
+}
+
+
+
+## one dim in dim dimensions
+case13 <- function(n, dim) {
+  phi <- runif(n, 0, 2 * pi)
+  data <- list()
+  for (j in 1:dim) {
+    data[[j]] <- phi / 2 * pi
+    for (k in 1:j) {
+      data[[j]] <- data[[j]] + sin((k + 1) * phi)
+      data[[j]] <- data[[j]] / (j + 1)
+    }
+  }
+  return(matrix(unlist(data), nrow = n))
+}
+
+
+## See ME Johnson multivariate statistical simulation John willey and sons New york
+m_dim_paraboloid <- function(n, dim) {
+  data <- NonNorMvtDist::rmvburr(n, parm2 = rep(1, dim))
+  x_mplus1 <- rowSums(data^2)
+  return(matrix(cbind(data, x_mplus1), nrow = n))
+}
+
+
+
+## Mbeta
+mbeta <- function(n) {
+  data <- rbeta(n * 10, 0.5, 10)
+  XN <- matrix(data, ncol = 10, nrow = n)
+  D1 <- XN * sin(cos(2 * pi * XN))
+  D2 <- XN * cos(sin(2 * pi * XN))
+  D3 <- cbind(D1, D2)
+  D4 <- cbind(D3, D3)
+  D4
+}
+
+
+# MN1 and MN2.
+
+MN <- function(n, dim) {
+  original <- replicate(dim, runif(n))
+  new <- matrix(ncol = dim, nrow = n)
+  data <- matrix(ncol = dim, nrow = n)
+  for (i in 1:dim) {
+    data[, i] <- tan(original[, i] * cos(original[, dim - i + 1]))
+  }
+  for (j in 1:dim) {
+    new[, j] <- atan(original[, dim - j + 1] * sin(original[, j]))
+  }
+  D1 <- matrix(cbind(data, new), nrow = n)
+  D2 <- matrix(cbind(D1, D1), nrow = n)
+  D2
+}
+
+
+
+
+###################################################################################################################################################
+###################################################################################################################################################
+##################################################################THE DATA ARE GENERATED BELOW#####################################################
+
+M1 <- t(replicate(2500, case1(10)))
+M2 <- case2(2500)
+M3 <- case3(2500)
+M4 <- case4(2500)
+M5 <- case5(2500)
+M6 <- case6(2500)
+M7 <- case7(2500)
+M9 <- case9(2500)
+M10a <- case10(2500, 10)
+M10b <- case10(2500, 17)
+M10c <- case10(2500, 24)
+M10d <- case10(2500, 70)
+M11 <- case11(2500)
+M12 <- case12(2500, 20)
+M13 <- case13(2500, 13)
+MN1 <- MN(2500, 18)
+MN2 <- MN(2500, 24)
+Mbeta <- mbeta(2500)
+Mp3 <- m_dim_paraboloid(2500, 3)
+Mp6 <- m_dim_paraboloid(2500, 6)
+Mp9 <- m_dim_paraboloid(2500, 9)
+
+
+
+
+
+
+
+
+
+
+
+
