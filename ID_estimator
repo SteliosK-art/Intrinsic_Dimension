@@ -1,0 +1,32 @@
+ID_estimator <- function(d = 1, data, i, j) {
+  n <- length(data[, 1])
+  ratios <- numeric(n)
+  distances <- matrix(ncol = n, nrow = n)
+  for (k in 1:n) {
+    for (l in 1:n) {
+      distances[k, l] <- sqrt(sum((data[k, ] - data[l, ])^2))
+    }
+  }
+  sorted_distances <- apply(distances, 2, sort)
+  sorted_distances <- sorted_distances[-1, ]
+  for (k in 1:n) {
+    ratios[k] <- sorted_distances[i, k] / sorted_distances[j, k]
+  }
+
+  # thelikelihood <- function(d, i, j, ratios_data = ratios) {
+  # -prod(d * ratios_data^(i * d - 1) * (1 - ratios_data^d)^(j - i - 1))
+  # }
+
+
+  loglig <- function(d, i, j, ratios_data = ratios) {
+    -sum(log(d * (ratios_data^(d * i - 1)) * ((1 - ratios_data^d)^(j - i - 1))))
+  }
+  log_int_value <- NMOF::gridSearch(loglig, levels = list(1:length(data[1, ])), i = i, j = j, ratios_data = ratios)$minlevels
+
+  # real_value <- optim(par = 1, loglig, i = i, j = j, ratios_data = ratios, method = "Brent", lower = 0, upper = 100)$par
+
+  # if (round(real_value) != log_int_value) {
+  # print("possible error")
+  # }
+  return(list("intrinsic dimension" = log_int_value))
+}
